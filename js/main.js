@@ -163,6 +163,8 @@ Vue.component('product', {
         <div class="product-info">
             <h1>{{ title }}</h1>
             <p>{{ sale }}</p>
+            <p>Просмотров: {{ views }}</p>
+            <p v-if="isNew">NEW</p>
             <a :href="link" v-if="link">More products like this</a>
             <p v-if="inStock" :class="{ line: !inStock }">In Stock</p>
             <p v-else :class="{ line: !inStock }">Out of Stock</p>
@@ -225,7 +227,9 @@ Vue.component('product', {
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
             onSale: true,
-            reviews: []
+            reviews: [],
+            views: 0,
+            isNew: true
         }
     },
     methods: {
@@ -270,6 +274,8 @@ Vue.component('product', {
         eventBus.$on('review-submitted', (productReview) => {
             this.reviews.push(productReview);
         });
+        this.views++;
+        
     }
 })
 
