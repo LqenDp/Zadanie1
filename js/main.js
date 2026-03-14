@@ -242,7 +242,27 @@ Vue.component('product', {
         updateProduct(index) {
             this.selectedVariant = index;
         },
-        
+        saveReviewsToStorage() {
+            const reviewsString = JSON.stringify(this.reviews);
+            localStorage.setItem('product-reviews', reviewsString);
+            console.log('Отзывы сохранены в localStorage:', this.reviews);
+        },
+        loadReviewsFromStorage() {
+            const saved = localStorage.getItem('product-reviews');
+            if (saved) {
+                this.reviews = JSON.parse(saved);
+                
+                console.log('Отзывы загружены из localStorage:', this.reviews);
+            } else {
+                console.log('Сохранённых отзывов нет');
+            }
+        },
+        handleReviewSubmitted(productReview) {
+            this.reviews.push(productReview);
+            this.saveReviewsToStorage();
+            
+            console.log('Добавлен новый отзыв и сохранён');
+        }
 
     },
     computed: {
@@ -271,11 +291,13 @@ Vue.component('product', {
         }
     },
     mounted() {
-        eventBus.$on('review-submitted', (productReview) => {
-            this.reviews.push(productReview);
-        });
+        this.loadReviewsFromStorage();
+        eventBus.$on('review-submitted', this.handleReviewSubmitted);   
         this.views++;
-        
+    },
+    
+     beforeDestroy() {
+        eventBus.$off('review-submitted', this.handleReviewSubmitted);
     }
 })
 
